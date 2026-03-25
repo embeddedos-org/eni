@@ -1,0 +1,3 @@
+add_executable(nia_test_common test_common.c)
+target_link_libraries(nia_test_common PRIVATE nia_common)
+add_test(NAME nia_common_tests COMMAND nia_test_common)

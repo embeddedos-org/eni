@@ -1,6 +1,6 @@
 # 🧠 Neural Interface Adapter (NIA)
 
-**Real-time neural, BCI, and assistive-input integration layer for ForgeOS AI Layer (AIL)**
+**Real-time neural, BCI, and assistive-input integration layer for AI systems powered by EIPC**
 
 ---
 
@@ -10,10 +10,16 @@ The **Neural Interface Adapter (NIA)** provides a **standardized, vendor-neutral
 
 * 🧠 Brain–Computer Interfaces (BCI)
 * 🧍 Assistive input systems
-* 🤖 Advanced human–machine interfaces
-* 🏭 Industrial operator control systems
+* 🤖 Human–machine interaction systems
+* 🏭 Industrial operator control platforms
 
-NIA converts neural or decoded cognitive signals into **structured events**, **safe tool calls**, and **real-time control flows** for embedded AI systems.
+NIA converts neural or decoded cognitive signals into:
+
+* structured events
+* safe tool calls
+* real-time control flows
+
+for embedded AI systems.
 
 ---
 
@@ -22,9 +28,9 @@ NIA converts neural or decoded cognitive signals into **structured events**, **s
 * ⚡ Real-time capable
 * 🔌 Vendor-agnostic integration
 * 🔐 Safe, policy-driven execution
-* 🔁 LTS-friendly and stable APIs
+* 🔁 LTS-stable APIs
 * 🧩 Modular and extensible
-* 🏗 Works from edge devices to industrial systems
+* 🏗 Scales from edge → industrial systems
 
 ---
 
@@ -39,10 +45,134 @@ Neural Device / SDK / Decoder
             ↓
       Policy + Permissions
             ↓
+        EIPC Layer
+            ↓
    Tool Mapping / Routing
             ↓
      AIL Agent / System
 ```
+
+---
+
+# 🔌 Communication Layer: EIPC
+
+NIA communicates with AIL through:
+
+# ⚡ **EIPC (Embedded IPC)**
+
+```text
+NIA ==>> EIPC ==>> AIL
+```
+
+EIPC provides:
+
+* real-time IPC
+* security-enhanced messaging
+* cross-platform portability
+* scalable communication modes
+
+---
+
+# 🧩 EIPC Profiles
+
+EIPC is a **single system with three deployment profiles**:
+
+---
+
+## ⚡ EIPC-Lite
+
+**Developer / Lightweight Mode**
+
+### Designed for
+
+* development & testing
+* simulators
+* small devices
+* rapid prototyping
+
+### Characteristics
+
+* direct IPC (no broker)
+* minimal security (basic integrity)
+* lowest memory footprint
+* simple request/response
+
+### Use Cases
+
+* NIA-Min ↔ AIL-Min (dev)
+* local testing
+* CI pipelines
+
+---
+
+## 🟢 EIPC-Min
+
+**Embedded Production Mode**
+
+### Designed for
+
+* real embedded systems
+* assistive applications
+* edge AI devices
+
+### Characteristics
+
+* local IPC (Unix sockets / pipes)
+* service identity
+* capability-based authorization
+* HMAC message integrity
+* audit hooks
+* strict local-only execution
+
+### Use Cases
+
+* NIA-Min ↔ AIL-Min (production)
+* IoT controllers
+* handheld AI systems
+
+---
+
+## 🔵 EIPC-Framework
+
+**Industrial / Full Mode**
+
+### Designed for
+
+* industrial systems
+* robotics
+* multi-service AI platforms
+
+### Characteristics
+
+* broker / routing layer
+* service registry
+* policy engine
+* audit service
+* priority lanes
+* multi-client routing
+* optional encryption
+
+### Use Cases
+
+* NIA-Framework ↔ AIL-Framework
+* industrial gateways
+* factory automation
+* multi-agent orchestration
+
+---
+
+# ⚖️ EIPC Profile Comparison
+
+| Feature           | Lite  | Min      | Framework   |
+| ----------------- | ----- | -------- | ----------- |
+| IPC transport     | ✅     | ✅        | ✅           |
+| Security          | basic | strong   | advanced    |
+| Policy engine     | ❌     | basic    | full        |
+| Audit logging     | ❌     | basic    | full        |
+| Broker/router     | ❌     | ❌        | ✅           |
+| Multi-service     | ❌     | limited  | ✅           |
+| Real-time control | ⚠     | ✅        | ✅           |
+| Encryption        | ❌     | optional | recommended |
 
 ---
 
@@ -51,38 +181,23 @@ Neural Device / SDK / Decoder
 ```text
 layers/ai/adapters/neural/
 ├── common/
-│   ├── schemas/
-│   ├── apis/
-│   ├── contracts/
-│   ├── security/
-│   └── examples/
 ├── min/
-│   ├── runtime/
-│   ├── input/
-│   ├── mapper/
-│   ├── tools/
-│   ├── services/
-│   └── profiles/
 ├── framework/
-│   ├── runtime-manager/
-│   ├── stream-bus/
-│   ├── orchestrator/
-│   ├── policy/
-│   ├── connectors/
-│   ├── observability/
-│   ├── services/
-│   └── profiles/
 └── providers/
-    ├── generic/
-    ├── simulator/
-    └── vendor/
+
+eipc/
+├── core/
+├── protocol/
+├── security/
+├── runtime/
+├── transport/
+├── services/
+└── sdk/
 ```
 
 ---
 
 # 🧩 NIA Variants
-
-NIA provides **two variants in the same repository**:
 
 ---
 
@@ -90,187 +205,77 @@ NIA provides **two variants in the same repository**:
 
 **Lightweight, real-time neural intent bridge**
 
-### Designed for
-
-* edge/mobile devices
-* assistive systems
-* low-memory environments
-* simple real-time control
-
----
-
-### 🧠 Architecture
+### Architecture
 
 ```text
 NIA-Min
 ├── input adapter
-├── event normalizer
-├── lightweight mapper
+├── normalizer
+├── mapper
 ├── policy filter
 ├── tool bridge
-└── optional local state
 ```
 
----
-
-### 📦 Core Packages
-
-* `nia-common-contracts`
-* `nia-min-input`
-* `nia-min-normalizer`
-* `nia-min-mapper`
-* `nia-min-policy`
-* `nia-min-tool-bridge`
-* `nia-min-service`
-
----
-
-### ⚙️ Real-time Flow
+### Real-time Flow
 
 ```text
-Input → Normalize → Filter → Policy → Map → Execute
+Input → Normalize → Filter → Policy → Execute
 ```
 
----
+### Uses
 
-### 🧪 Example Config
+* assistive UI
+* cursor control
+* edge AI devices
 
-```yaml
-nia:
-  variant: min
-  mode: intent
+### Works with
 
-  input:
-    provider: simulator
-    transport: unix-socket
-
-  filters:
-    min_confidence: 0.80
-    debounce_ms: 100
-
-  policy:
-    allow:
-      - ui.cursor.move
-      - ui.select
-    deny:
-      - system.shutdown
-
-  mapping:
-    move_left: ui.cursor.move
-    select: ui.select
-```
-
----
-
-### 🎯 Use Cases
-
-* assistive UI control
-* cursor navigation
-* handheld AI assistants
-* IoT edge control
+👉 **EIPC-Lite (dev)**
+👉 **EIPC-Min (production)**
 
 ---
 
 ## 🏗 NIA-Framework
 
-**Scalable, industrial-grade neural integration framework**
+**Scalable neural integration framework**
 
----
-
-### Designed for
-
-* industrial gateways
-* robotics systems
-* multi-device environments
-* large embedded systems
-
----
-
-### 🧠 Architecture
+### Architecture
 
 ```text
 NIA-Framework
 ├── provider manager
-├── stream ingestion bus
-├── normalization pipeline
-├── event router
+├── stream bus
+├── router
 ├── policy engine
-├── tool orchestration
+├── orchestrator
 ├── connectors
 └── observability
 ```
 
----
-
-### 📦 Core Packages
-
-* `nia-fw-provider-manager`
-* `nia-fw-stream-bus`
-* `nia-fw-router`
-* `nia-fw-policy`
-* `nia-fw-orchestrator`
-* `nia-fw-connectors`
-* `nia-fw-observability`
-* `nia-fw-service`
-
----
-
-### ⚙️ Real-time Flow
+### Real-time Flow
 
 ```text
-Provider → Stream → Normalize → Route → Policy → Execute → Audit
+Stream → Normalize → Route → Policy → Execute → Audit
 ```
 
----
+### Uses
 
-### 🧪 Example Config
-
-```yaml
-nia:
-  variant: framework
-  mode: features+intent
-
-  providers:
-    - name: generic-decoder
-      transport: grpc
-
-  routing:
-    classes:
-      control-critical:
-        max_latency_ms: 20
-        local_only: true
-
-  policy:
-    require_confirmation:
-      - actuator.write
-
-  observability:
-    metrics: true
-    audit: true
-```
-
----
-
-### 🎯 Use Cases
-
-* industrial operator control
-* robotics interfaces
-* factory automation
+* industrial systems
+* robotics
 * multi-agent systems
 
----
+### Works with
 
-# 🧠 Common Contracts
-
-Shared across both variants.
+👉 **EIPC-Framework**
 
 ---
 
-## Signal Event
+# 🧠 Common Data Contracts
+
+## Intent Event
 
 ```json
 {
-  "version": "v1",
   "type": "intent",
   "payload": {
     "intent": "move_left",
@@ -278,8 +283,6 @@ Shared across both variants.
   }
 }
 ```
-
----
 
 ## Tool Execution
 
@@ -291,8 +294,6 @@ Shared across both variants.
   }
 }
 ```
-
----
 
 ## Feature Stream
 
@@ -307,85 +308,68 @@ Shared across both variants.
 
 ---
 
-# 🔐 Security Model
+# 🔐 Security Model (via EIPC)
 
-NIA enforces strict safety rules.
+## Core principles
+
+* authenticated services
+* capability-based access
+* message integrity (HMAC)
+* replay protection
+* policy enforcement
+* audit logging
 
 ---
 
 ## Action Classes
 
-| Class      | Description                   |
-| ---------- | ----------------------------- |
-| Safe       | UI control, read-only actions |
-| Controlled | Device writes, automation     |
-| Restricted | System-level operations       |
-
----
-
-## Example Policy
-
-```yaml
-nia_policy:
-  allow:
-    - ui.cursor.move
-  deny:
-    - system.shutdown
-    - firmware.update
-```
+| Class      | Description           |
+| ---------- | --------------------- |
+| Safe       | UI control, read-only |
+| Controlled | device writes         |
+| Restricted | system operations     |
 
 ---
 
 # ⚡ Real-Time Design
 
-## NIA-Min
+## NIA-Min + EIPC-Min
 
 * synchronous pipeline
-* minimal buffering
 * ultra-low latency
+* deterministic execution
 
-## NIA-Framework
+## NIA-Framework + EIPC-Framework
 
 * multi-lane routing
-* priority classes
+* priority classes (P0–P3)
 * buffered + real-time mix
 
 ---
 
 # 🔌 Integration Levels
 
-| Level    | Description                      |
-| -------- | -------------------------------- |
-| Intent   | decoded commands (recommended)   |
-| Features | processed signals                |
-| Raw      | direct neural streams (advanced) |
+| Level    | Description                    |
+| -------- | ------------------------------ |
+| Intent   | decoded commands (recommended) |
+| Features | processed signals              |
+| Raw      | direct neural streams          |
 
 ---
 
 # 🧩 Providers
 
-NIA supports pluggable providers:
-
-* `simulator` (development)
-* `generic` (decoder bridge)
-* `vendor` (SDK-based integration)
+* simulator
+* generic decoder
+* vendor SDK adapters
 
 ---
 
-# 🚀 Build & Integration
-
-## Add NIA to ForgeOS
+# 🚀 Build & Run
 
 ```bash
 forge add ai-neural-adapter
 forge system
-```
-
----
-
-## Run with AI
-
-```bash
 forge ai run
 ```
 
@@ -395,291 +379,85 @@ forge ai run
 
 ## Phase 1
 
-* define schemas and contracts
-* build NIA-Min MVP
+* define schemas
+* build NIA-Min + EIPC-Lite
 
 ## Phase 2
 
-* add framework components
-* implement routing + policy
+* add EIPC-Min security
+* production deployment
 
 ## Phase 3
 
-* add connectors and providers
-* integrate observability
+* build NIA-Framework
+* add EIPC-Framework routing
 
 ## Phase 4
 
 * LTS stabilization
-* API freeze
-* audit and security hardening
+* audit + policy hardening
 
 ---
 
 # ⚠️ Important Notes
 
-* NIA does **not decode raw neural signals by default**
-* external SDKs or decoders are typically required
-* vendor-specific integrations depend on API availability
-* medical/regulatory compliance may apply
+* NIA does **not decode raw neural signals**
+* external SDKs are required
+* vendor integrations depend on availability
+* regulatory compliance may apply
 
 ---
 
-# 🌟 Summary
+# 🌍 Supported Environments
 
-> NIA transforms neural signals into structured, safe, real-time AI actions.
+NIA + EIPC runs on:
 
-It enables ForgeOS + AIL to support:
-
-* next-gen human–machine interfaces
-* assistive technologies
-* industrial AI control systems
-* intelligent embedded automation
-
----
-
-## 🤝 Contributing
-
-Contributions welcome:
-
-* providers (new adapters)
-* policies and safety models
-* performance optimizations
-* industrial connectors
-
-## ✅ Supported environments
-
-NIA can run on:
-
-* 🐧 **Linux (Ubuntu, Debian, embedded distros)**
-* 🪟 **Windows (development/testing)**
-* 🐳 **Containers (Docker, Kubernetes)**
-* ⚙️ **ForgeOS (native, optimized target platform)**
-
----
-
-# 🏗 How this works (Architecture)
-
-## 1. NIA Core (Portable)
-
-This is the **same across all platforms**:
-
-```text
-nia-core/
-├── input adapters
-├── event normalizer
-├── mapper
-├── policy engine
-├── tool bridge
-└── API server
-```
-
-👉 Runs on:
-
-* Ubuntu
-* Windows
-* Docker
-* CI environments
-
----
-
-## 2. Platform Adapters
-
-```text
-platform/
-├── linux/
-├── windows/
-├── container/
-└── forgeos/
-```
-
-Each adapter handles OS-specific integration.
-
----
-
-# 🔌 Platform Capabilities
-
-## 🐧 Linux / Ubuntu
-
-✔ Full support
-✔ Best for development
-✔ Easy integration with:
-
-* sockets
-* MQTT
-* gRPC
-* device drivers (if needed)
-
-Example:
-
-```bash
-nia run --provider simulator
-```
-
----
-
-## 🪟 Windows
-
-✔ Supported for:
-
-* development
-* testing
-* simulation
-
-⚠ Limited for:
-
-* real hardware control
-* low-level device integration
-
----
-
-## 🐳 Containers (Docker)
-
-✔ Ideal for:
-
-* cloud deployment
-* testing pipelines
-* distributed AI systems
-
-Example:
-
-```bash
-docker run nia-framework
-```
-
----
-
-## ⚙️ ForgeOS (Best Target)
-
-This is where NIA becomes powerful.
-
-✔ Deep integration:
-
-* system services (systemd)
-* device access (GPIO, CAN, sensors)
-* real-time constraints
-* OTA updates
-* cross-compilation
-* hardware acceleration
-
-👉 This is your **competitive advantage**
-
----
-
-# ⚖️ Capability Comparison
-
-| Feature               | Ubuntu | Windows | Container | ForgeOS |
-| --------------------- | ------ | ------- | --------- | ------- |
-| Run NIA-Min           | ✅      | ✅       | ✅         | ✅       |
-| Run NIA-Framework     | ✅      | ⚠       | ✅         | ✅       |
-| Real-time control     | ⚠      | ❌       | ⚠         | ✅       |
-| Hardware integration  | ⚠      | ❌       | ❌         | ✅       |
-| Industrial deployment | ⚠      | ❌       | ⚠         | ✅       |
-| LTS embedded support  | ❌      | ❌       | ❌         | ✅       |
+* 🐧 Linux / Ubuntu
+* 🪟 Windows (dev/test)
+* 🐳 Containers
+* ⚙️ ForgeOS (optimized target)
 
 ---
 
 # 🧠 Design Principle
 
-> **Separate core logic from platform integration**
-
-## Always do this:
-
 ```text
-NIA Core (portable)
-        +
-Platform Adapter (OS-specific)
+Portable Core + Platform Adapter
 ```
 
-## Never do this:
-
-```text
-❌ NIA tightly coupled to OS
-```
+Never tightly couple to OS.
 
 ---
 
-# 🧩 Example Usage Across Platforms
+# 🌟 Summary
 
-## Ubuntu
+> **NIA + EIPC = Secure, real-time neural-to-AI bridge**
 
-```bash
-nia-min run
-```
-
----
-
-## Windows
-
-```powershell
-nia-min.exe run
-```
+* NIA handles neural input
+* EIPC handles communication + security
+* AIL executes intelligent behavior
 
 ---
 
-## Docker
+## 💡 Key Insight
 
-```bash
-docker run nia-min
-```
-
----
-
-## ForgeOS
-
-```bash
-forge add ai-neural-adapter
-forge system
-forge ai run
-```
+> Use **EIPC-Lite for development**
+> Use **EIPC-Min for embedded production**
+> Use **EIPC-Framework for industrial scale**
 
 ---
 
-# 🚀 Best Strategy
+## 🤝 Contributing
 
-## Build in this order:
-
-### Phase 1
-
-* NIA-Core (portable)
-* Run on Ubuntu first
-
-### Phase 2
-
-* Add NIA-Min (edge runtime)
-
-### Phase 3
-
-* Add NIA-Framework (industrial)
-
-### Phase 4
-
-* Add ForgeOS adapter (deep integration)
+* providers
+* IPC transports
+* security modules
+* performance tuning
 
 ---
-
-# 💡 Key Insight
-
-> NIA is your **interface layer**
-> ForgeOS is your **deployment platform**
-
----
-
-# 🏁 Final Answer
-
-## Can NIA run on any OS?
-
-👉 **Yes — by design it should be OS-agnostic**
-
-## Where is it strongest?
-
-👉 **On ForgeOS**, where it can:
-
-* control hardware
-* run in real-time
-* integrate with system services
-* support LTS embedded deployments
 
 ## 📜 License
 
-MIT License
+MIT License (recommended)
+
+---

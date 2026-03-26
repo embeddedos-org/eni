@@ -1,4 +1,4 @@
-add_library(nia_common STATIC
+add_library(eni_common STATIC
     src/types.c
     src/event.c
     src/log.c
@@ -8,6 +8,6 @@ add_library(nia_common STATIC
     src/provider.c
 )
 
-target_include_directories(nia_common PUBLIC
+target_include_directories(eni_common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )

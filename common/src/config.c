@@ -1,37 +1,37 @@
-#include "nia/config.h"
-#include "nia/log.h"
+#include "eni/config.h"
+#include "eni/log.h"
 #include <string.h>
 #include <stdio.h>
 
-nia_status_t nia_config_init(nia_config_t *cfg)
+eni_status_t eni_config_init(eni_config_t *cfg)
 {
-    if (!cfg) return NIA_ERR_INVALID;
+    if (!cfg) return ENI_ERR_INVALID;
     memset(cfg, 0, sizeof(*cfg));
-    cfg->variant = NIA_VARIANT_MIN;
-    cfg->mode    = NIA_MODE_INTENT;
+    cfg->variant = ENI_VARIANT_MIN;
+    cfg->mode    = ENI_MODE_INTENT;
     cfg->filter.min_confidence = 0.80f;
     cfg->filter.debounce_ms    = 100;
-    return NIA_OK;
+    return ENI_OK;
 }
 
-nia_status_t nia_config_load_defaults(nia_config_t *cfg, nia_variant_t variant)
+eni_status_t eni_config_load_defaults(eni_config_t *cfg, eni_variant_t variant)
 {
-    if (!cfg) return NIA_ERR_INVALID;
+    if (!cfg) return ENI_ERR_INVALID;
 
-    nia_config_init(cfg);
+    eni_config_init(cfg);
     cfg->variant = variant;
 
-    if (variant == NIA_VARIANT_MIN) {
-        cfg->mode = NIA_MODE_INTENT;
+    if (variant == ENI_VARIANT_MIN) {
+        cfg->mode = ENI_MODE_INTENT;
         cfg->providers[0].name      = "simulator";
-        cfg->providers[0].transport = NIA_TRANSPORT_UNIX_SOCKET;
+        cfg->providers[0].transport = ENI_TRANSPORT_UNIX_SOCKET;
         cfg->provider_count         = 1;
         cfg->filter.min_confidence  = 0.80f;
         cfg->filter.debounce_ms     = 100;
     } else {
-        cfg->mode = NIA_MODE_FEATURES_INTENT;
+        cfg->mode = ENI_MODE_FEATURES_INTENT;
         cfg->providers[0].name      = "generic-decoder";
-        cfg->providers[0].transport = NIA_TRANSPORT_GRPC;
+        cfg->providers[0].transport = ENI_TRANSPORT_GRPC;
         cfg->provider_count         = 1;
         cfg->routing.max_latency_ms = 20;
         cfg->routing.local_only     = true;
@@ -40,28 +40,28 @@ nia_status_t nia_config_load_defaults(nia_config_t *cfg, nia_variant_t variant)
         cfg->observability.trace    = false;
     }
 
-    return NIA_OK;
+    return ENI_OK;
 }
 
-nia_status_t nia_config_load_file(nia_config_t *cfg, const char *path)
+eni_status_t eni_config_load_file(eni_config_t *cfg, const char *path)
 {
-    if (!cfg || !path) return NIA_ERR_INVALID;
+    if (!cfg || !path) return ENI_ERR_INVALID;
     /* TODO: YAML/JSON file parsing */
-    NIA_LOG_WARN("config", "file loading not yet implemented: %s", path);
-    return NIA_ERR_UNSUPPORTED;
+    ENI_LOG_WARN("config", "file loading not yet implemented: %s", path);
+    return ENI_ERR_UNSUPPORTED;
 }
 
-void nia_config_dump(const nia_config_t *cfg)
+void eni_config_dump(const eni_config_t *cfg)
 {
     if (!cfg) return;
 
-    const char *var_str = cfg->variant == NIA_VARIANT_MIN ? "min" : "framework";
+    const char *var_str = cfg->variant == ENI_VARIANT_MIN ? "min" : "framework";
     const char *mode_str;
     switch (cfg->mode) {
-    case NIA_MODE_INTENT:          mode_str = "intent";          break;
-    case NIA_MODE_FEATURES:        mode_str = "features";        break;
-    case NIA_MODE_RAW:             mode_str = "raw";             break;
-    case NIA_MODE_FEATURES_INTENT: mode_str = "features+intent"; break;
+    case ENI_MODE_INTENT:          mode_str = "intent";          break;
+    case ENI_MODE_FEATURES:        mode_str = "features";        break;
+    case ENI_MODE_RAW:             mode_str = "raw";             break;
+    case ENI_MODE_FEATURES_INTENT: mode_str = "features+intent"; break;
     default:                       mode_str = "unknown";         break;
     }
 

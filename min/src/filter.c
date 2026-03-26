@@ -1,27 +1,27 @@
-#include "nia_min/filter.h"
-#include "nia/log.h"
+#include "eni_min/filter.h"
+#include "eni/log.h"
 #include <string.h>
 
-nia_status_t nia_min_filter_init(nia_min_filter_t *filter,
+eni_status_t eni_min_filter_init(eni_min_filter_t *filter,
                                   float min_confidence, uint32_t debounce_ms)
 {
-    if (!filter) return NIA_ERR_INVALID;
+    if (!filter) return ENI_ERR_INVALID;
     memset(filter, 0, sizeof(*filter));
     filter->min_confidence = min_confidence;
     filter->debounce_ms    = debounce_ms;
-    return NIA_OK;
+    return ENI_OK;
 }
 
-bool nia_min_filter_accept(nia_min_filter_t *filter, const nia_event_t *ev)
+bool eni_min_filter_accept(eni_min_filter_t *filter, const eni_event_t *ev)
 {
     if (!filter || !ev) return false;
 
     /* Only filter intent events — pass everything else through */
-    if (ev->type != NIA_EVENT_INTENT) return true;
+    if (ev->type != ENI_EVENT_INTENT) return true;
 
     /* Confidence threshold */
     if (ev->payload.intent.confidence < filter->min_confidence) {
-        NIA_LOG_TRACE("min.filter", "rejected %s (confidence=%.2f < %.2f)",
+        ENI_LOG_TRACE("min.filter", "rejected %s (confidence=%.2f < %.2f)",
                       ev->payload.intent.name,
                       ev->payload.intent.confidence,
                       filter->min_confidence);
@@ -36,7 +36,7 @@ bool nia_min_filter_accept(nia_min_filter_t *filter, const nia_event_t *ev)
         uint64_t now_ms  = ev->timestamp.sec * 1000 +
                            ev->timestamp.nsec / 1000000;
         if (now_ms - last_ms < filter->debounce_ms) {
-            NIA_LOG_TRACE("min.filter", "debounced %s", ev->payload.intent.name);
+            ENI_LOG_TRACE("min.filter", "debounced %s", ev->payload.intent.name);
             return false;
         }
     }
@@ -44,7 +44,7 @@ bool nia_min_filter_accept(nia_min_filter_t *filter, const nia_event_t *ev)
     /* Accept — update state */
     filter->last_event_time = ev->timestamp;
     size_t len = strlen(ev->payload.intent.name);
-    if (len >= NIA_EVENT_INTENT_MAX) len = NIA_EVENT_INTENT_MAX - 1;
+    if (len >= ENI_EVENT_INTENT_MAX) len = ENI_EVENT_INTENT_MAX - 1;
     memcpy(filter->last_intent, ev->payload.intent.name, len);
     filter->last_intent[len] = '\0';
 

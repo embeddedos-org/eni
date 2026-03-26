@@ -1,45 +1,45 @@
-#include "nia/policy.h"
-#include "nia/log.h"
+#include "eni/policy.h"
+#include "eni/log.h"
 #include <string.h>
 #include <stdio.h>
 
-nia_status_t nia_policy_init(nia_policy_engine_t *engine)
+eni_status_t eni_policy_init(eni_policy_engine_t *engine)
 {
-    if (!engine) return NIA_ERR_INVALID;
+    if (!engine) return ENI_ERR_INVALID;
     memset(engine, 0, sizeof(*engine));
     engine->default_deny = false;
-    return NIA_OK;
+    return ENI_OK;
 }
 
-nia_status_t nia_policy_add_rule(nia_policy_engine_t *engine,
+eni_status_t eni_policy_add_rule(eni_policy_engine_t *engine,
                                   const char *action,
-                                  nia_policy_verdict_t verdict,
-                                  nia_action_class_t action_class)
+                                  eni_policy_verdict_t verdict,
+                                  eni_action_class_t action_class)
 {
-    if (!engine || !action) return NIA_ERR_INVALID;
-    if (engine->count >= NIA_POLICY_MAX_RULES) return NIA_ERR_OVERFLOW;
+    if (!engine || !action) return ENI_ERR_INVALID;
+    if (engine->count >= ENI_POLICY_MAX_RULES) return ENI_ERR_OVERFLOW;
 
-    nia_policy_rule_t *rule = &engine->rules[engine->count];
+    eni_policy_rule_t *rule = &engine->rules[engine->count];
     size_t len = strlen(action);
-    if (len >= NIA_POLICY_ACTION_MAX) len = NIA_POLICY_ACTION_MAX - 1;
+    if (len >= ENI_POLICY_ACTION_MAX) len = ENI_POLICY_ACTION_MAX - 1;
     memcpy(rule->action, action, len);
     rule->action[len] = '\0';
     rule->verdict      = verdict;
     rule->action_class = action_class;
     engine->count++;
 
-    NIA_LOG_DEBUG("policy", "added rule: %s → %s",
+    ENI_LOG_DEBUG("policy", "added rule: %s → %s",
                   action,
-                  verdict == NIA_POLICY_ALLOW ? "allow" :
-                  verdict == NIA_POLICY_DENY  ? "deny"  : "confirm");
+                  verdict == ENI_POLICY_ALLOW ? "allow" :
+                  verdict == ENI_POLICY_DENY  ? "deny"  : "confirm");
 
-    return NIA_OK;
+    return ENI_OK;
 }
 
-nia_policy_verdict_t nia_policy_evaluate(const nia_policy_engine_t *engine,
+eni_policy_verdict_t eni_policy_evaluate(const eni_policy_engine_t *engine,
                                           const char *action)
 {
-    if (!engine || !action) return NIA_POLICY_DENY;
+    if (!engine || !action) return ENI_POLICY_DENY;
 
     for (int i = 0; i < engine->count; i++) {
         if (strcmp(engine->rules[i].action, action) == 0) {
@@ -47,17 +47,17 @@ nia_policy_verdict_t nia_policy_evaluate(const nia_policy_engine_t *engine,
         }
     }
 
-    return engine->default_deny ? NIA_POLICY_DENY : NIA_POLICY_ALLOW;
+    return engine->default_deny ? ENI_POLICY_DENY : ENI_POLICY_ALLOW;
 }
 
-nia_status_t nia_policy_set_default_deny(nia_policy_engine_t *engine, bool deny)
+eni_status_t eni_policy_set_default_deny(eni_policy_engine_t *engine, bool deny)
 {
-    if (!engine) return NIA_ERR_INVALID;
+    if (!engine) return ENI_ERR_INVALID;
     engine->default_deny = deny;
-    return NIA_OK;
+    return ENI_OK;
 }
 
-void nia_policy_dump(const nia_policy_engine_t *engine)
+void eni_policy_dump(const eni_policy_engine_t *engine)
 {
     if (!engine) return;
 
@@ -65,13 +65,13 @@ void nia_policy_dump(const nia_policy_engine_t *engine)
            engine->count, engine->default_deny ? "deny" : "allow");
 
     for (int i = 0; i < engine->count; i++) {
-        const nia_policy_rule_t *r = &engine->rules[i];
+        const eni_policy_rule_t *r = &engine->rules[i];
         const char *verdict_str =
-            r->verdict == NIA_POLICY_ALLOW   ? "allow" :
-            r->verdict == NIA_POLICY_DENY    ? "deny"  : "confirm";
+            r->verdict == ENI_POLICY_ALLOW   ? "allow" :
+            r->verdict == ENI_POLICY_DENY    ? "deny"  : "confirm";
         const char *class_str =
-            r->action_class == NIA_ACTION_SAFE       ? "safe" :
-            r->action_class == NIA_ACTION_CONTROLLED ? "controlled" : "restricted";
+            r->action_class == ENI_ACTION_SAFE       ? "safe" :
+            r->action_class == ENI_ACTION_CONTROLLED ? "controlled" : "restricted";
         printf("  [%d] %s → %s (%s)\n", i, r->action, verdict_str, class_str);
     }
 }

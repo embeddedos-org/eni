@@ -1,18 +1,18 @@
-#include "nia_platform/platform.h"
+#include "eni_platform/platform.h"
 
 #ifndef _WIN32
 
 #include <time.h>
 #include <unistd.h>
 
-nia_status_t nia_platform_init(void)
+eni_status_t eni_platform_init(void)
 {
-    return NIA_OK;
+    return ENI_OK;
 }
 
-nia_platform_info_t nia_platform_info(void)
+eni_platform_info_t eni_platform_info(void)
 {
-    nia_platform_info_t info = {
+    eni_platform_info_t info = {
         .os_name          = "linux",
 #if defined(__aarch64__)
         .arch             = "arm64",
@@ -29,7 +29,7 @@ nia_platform_info_t nia_platform_info(void)
     return info;
 }
 
-void nia_platform_sleep_ms(uint32_t ms)
+void eni_platform_sleep_ms(uint32_t ms)
 {
     struct timespec ts;
     ts.tv_sec  = ms / 1000;
@@ -37,7 +37,7 @@ void nia_platform_sleep_ms(uint32_t ms)
     nanosleep(&ts, NULL);
 }
 
-uint64_t nia_platform_monotonic_ms(void)
+uint64_t eni_platform_monotonic_ms(void)
 {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);

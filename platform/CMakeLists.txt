@@ -1,20 +1,20 @@
-add_library(nia_platform STATIC)
+add_library(eni_platform STATIC)
 
-target_include_directories(nia_platform PUBLIC
+target_include_directories(eni_platform PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(nia_platform PUBLIC nia_common)
+target_link_libraries(eni_platform PUBLIC eni_common)
 
-if(NIA_PLATFORM_LINUX)
-    target_sources(nia_platform PRIVATE linux/platform_linux.c)
+if(ENI_PLATFORM_LINUX)
+    target_sources(eni_platform PRIVATE linux/platform_linux.c)
 endif()
 
-if(NIA_PLATFORM_WINDOWS)
-    target_sources(nia_platform PRIVATE windows/platform_windows.c)
+if(ENI_PLATFORM_WINDOWS)
+    target_sources(eni_platform PRIVATE windows/platform_windows.c)
 endif()
 
-if(NIA_PLATFORM_FORGEOS)
-    target_sources(nia_platform PRIVATE forgeos/platform_forgeos.c)
-    target_compile_definitions(nia_platform PRIVATE NIA_PLATFORM_FORGEOS_ENABLED)
+if(ENI_PLATFORM_EOS)
+    target_sources(eni_platform PRIVATE eos/platform_eos.c)
+    target_compile_definitions(eni_platform PRIVATE ENI_PLATFORM_EOS_ENABLED)
 endif()

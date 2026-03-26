@@ -1,4 +1,4 @@
-#include "nia/types.h"
+#include "eni/types.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -6,31 +6,31 @@
 #include <time.h>
 #endif
 
-const char *nia_status_str(nia_status_t status)
+const char *eni_status_str(eni_status_t status)
 {
     switch (status) {
-    case NIA_OK:               return "OK";
-    case NIA_ERR_NOMEM:        return "ERR_NOMEM";
-    case NIA_ERR_INVALID:      return "ERR_INVALID";
-    case NIA_ERR_NOT_FOUND:    return "ERR_NOT_FOUND";
-    case NIA_ERR_IO:           return "ERR_IO";
-    case NIA_ERR_TIMEOUT:      return "ERR_TIMEOUT";
-    case NIA_ERR_PERMISSION:   return "ERR_PERMISSION";
-    case NIA_ERR_RUNTIME:      return "ERR_RUNTIME";
-    case NIA_ERR_CONNECT:      return "ERR_CONNECT";
-    case NIA_ERR_PROTOCOL:     return "ERR_PROTOCOL";
-    case NIA_ERR_CONFIG:       return "ERR_CONFIG";
-    case NIA_ERR_UNSUPPORTED:  return "ERR_UNSUPPORTED";
-    case NIA_ERR_POLICY_DENIED:return "ERR_POLICY_DENIED";
-    case NIA_ERR_PROVIDER:     return "ERR_PROVIDER";
-    case NIA_ERR_OVERFLOW:     return "ERR_OVERFLOW";
+    case ENI_OK:               return "OK";
+    case ENI_ERR_NOMEM:        return "ERR_NOMEM";
+    case ENI_ERR_INVALID:      return "ERR_INVALID";
+    case ENI_ERR_NOT_FOUND:    return "ERR_NOT_FOUND";
+    case ENI_ERR_IO:           return "ERR_IO";
+    case ENI_ERR_TIMEOUT:      return "ERR_TIMEOUT";
+    case ENI_ERR_PERMISSION:   return "ERR_PERMISSION";
+    case ENI_ERR_RUNTIME:      return "ERR_RUNTIME";
+    case ENI_ERR_CONNECT:      return "ERR_CONNECT";
+    case ENI_ERR_PROTOCOL:     return "ERR_PROTOCOL";
+    case ENI_ERR_CONFIG:       return "ERR_CONFIG";
+    case ENI_ERR_UNSUPPORTED:  return "ERR_UNSUPPORTED";
+    case ENI_ERR_POLICY_DENIED:return "ERR_POLICY_DENIED";
+    case ENI_ERR_PROVIDER:     return "ERR_PROVIDER";
+    case ENI_ERR_OVERFLOW:     return "ERR_OVERFLOW";
     default:                   return "UNKNOWN";
     }
 }
 
-nia_timestamp_t nia_timestamp_now(void)
+eni_timestamp_t eni_timestamp_now(void)
 {
-    nia_timestamp_t ts = {0, 0};
+    eni_timestamp_t ts = {0, 0};
 #ifdef _WIN32
     FILETIME ft;
     GetSystemTimeAsFileTime(&ft);

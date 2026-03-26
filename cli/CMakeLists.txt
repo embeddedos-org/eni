@@ -1,9 +1,9 @@
-add_executable(nia main.c)
+add_executable(eni main.c)
 
-target_link_libraries(nia PRIVATE
-    nia_common
-    nia_min
-    nia_framework
-    nia_providers
-    nia_platform
+target_link_libraries(eni PRIVATE
+    eni_common
+    eni_min
+    eni_framework
+    eni_providers
+    eni_platform
 )

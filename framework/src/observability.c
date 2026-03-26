@@ -1,64 +1,64 @@
-#include "nia_fw/observability.h"
-#include "nia/log.h"
+#include "eni_fw/observability.h"
+#include "eni/log.h"
 #include <string.h>
 #include <stdio.h>
 
-nia_status_t nia_fw_observability_init(nia_fw_observability_t *obs,
+eni_status_t eni_fw_observability_init(eni_fw_observability_t *obs,
                                         bool metrics, bool audit, bool trace)
 {
-    if (!obs) return NIA_ERR_INVALID;
+    if (!obs) return ENI_ERR_INVALID;
     memset(obs, 0, sizeof(*obs));
     obs->metrics_enabled = metrics;
     obs->audit_enabled   = audit;
     obs->trace_enabled   = trace;
-    return NIA_OK;
+    return ENI_OK;
 }
 
-void nia_fw_observability_record_event(nia_fw_observability_t *obs)
+void eni_fw_observability_record_event(eni_fw_observability_t *obs)
 {
     if (!obs || !obs->metrics_enabled) return;
     obs->metrics.events_ingested++;
 }
 
-void nia_fw_observability_record_exec(nia_fw_observability_t *obs, uint32_t latency_ms)
+void eni_fw_observability_record_exec(eni_fw_observability_t *obs, uint32_t latency_ms)
 {
     if (!obs || !obs->metrics_enabled) return;
     obs->metrics.events_executed++;
     obs->metrics.total_latency_ms += latency_ms;
 }
 
-void nia_fw_observability_record_denied(nia_fw_observability_t *obs)
+void eni_fw_observability_record_denied(eni_fw_observability_t *obs)
 {
     if (!obs || !obs->metrics_enabled) return;
     obs->metrics.events_denied++;
 }
 
-void nia_fw_observability_record_drop(nia_fw_observability_t *obs)
+void eni_fw_observability_record_drop(eni_fw_observability_t *obs)
 {
     if (!obs || !obs->metrics_enabled) return;
     obs->metrics.events_dropped++;
 }
 
-void nia_fw_observability_audit(nia_fw_observability_t *obs,
+void eni_fw_observability_audit(eni_fw_observability_t *obs,
                                  const char *action, const char *source,
-                                 nia_status_t result)
+                                 eni_status_t result)
 {
     if (!obs || !obs->audit_enabled) return;
 
-    int idx = (obs->audit_head + obs->audit_count) % NIA_FW_AUDIT_LOG_MAX;
-    if (obs->audit_count >= NIA_FW_AUDIT_LOG_MAX) {
-        obs->audit_head = (obs->audit_head + 1) % NIA_FW_AUDIT_LOG_MAX;
+    int idx = (obs->audit_head + obs->audit_count) % ENI_FW_AUDIT_LOG_MAX;
+    if (obs->audit_count >= ENI_FW_AUDIT_LOG_MAX) {
+        obs->audit_head = (obs->audit_head + 1) % ENI_FW_AUDIT_LOG_MAX;
     } else {
         obs->audit_count++;
     }
 
-    nia_fw_audit_entry_t *entry = &obs->audit_log[idx];
-    entry->timestamp = nia_timestamp_now();
+    eni_fw_audit_entry_t *entry = &obs->audit_log[idx];
+    entry->timestamp = eni_timestamp_now();
     entry->result    = result;
 
     if (action) {
         size_t len = strlen(action);
-        if (len >= NIA_POLICY_ACTION_MAX) len = NIA_POLICY_ACTION_MAX - 1;
+        if (len >= ENI_POLICY_ACTION_MAX) len = ENI_POLICY_ACTION_MAX - 1;
         memcpy(entry->action, action, len);
         entry->action[len] = '\0';
     } else {
@@ -67,7 +67,7 @@ void nia_fw_observability_audit(nia_fw_observability_t *obs,
 
     if (source) {
         size_t len = strlen(source);
-        if (len >= NIA_EVENT_SOURCE_MAX) len = NIA_EVENT_SOURCE_MAX - 1;
+        if (len >= ENI_EVENT_SOURCE_MAX) len = ENI_EVENT_SOURCE_MAX - 1;
         memcpy(entry->source, source, len);
         entry->source[len] = '\0';
     } else {
@@ -75,11 +75,11 @@ void nia_fw_observability_audit(nia_fw_observability_t *obs,
     }
 }
 
-void nia_fw_observability_dump_metrics(const nia_fw_observability_t *obs)
+void eni_fw_observability_dump_metrics(const eni_fw_observability_t *obs)
 {
     if (!obs) return;
 
-    const nia_fw_metrics_t *m = &obs->metrics;
+    const eni_fw_metrics_t *m = &obs->metrics;
     printf("[metrics] ingested=%llu routed=%llu executed=%llu denied=%llu dropped=%llu avg_latency=%llu ms\n",
            (unsigned long long)m->events_ingested,
            (unsigned long long)m->events_routed,
@@ -91,7 +91,7 @@ void nia_fw_observability_dump_metrics(const nia_fw_observability_t *obs)
                : 0ULL);
 }
 
-void nia_fw_observability_dump_audit(const nia_fw_observability_t *obs, int last_n)
+void eni_fw_observability_dump_audit(const eni_fw_observability_t *obs, int last_n)
 {
     if (!obs || obs->audit_count == 0) return;
 
@@ -104,12 +104,12 @@ void nia_fw_observability_dump_audit(const nia_fw_observability_t *obs, int last
 
     printf("[audit] last %d entries:\n", count);
     for (int i = 0; i < count; i++) {
-        int idx = (obs->audit_head + start + i) % NIA_FW_AUDIT_LOG_MAX;
-        const nia_fw_audit_entry_t *e = &obs->audit_log[idx];
+        int idx = (obs->audit_head + start + i) % ENI_FW_AUDIT_LOG_MAX;
+        const eni_fw_audit_entry_t *e = &obs->audit_log[idx];
         printf("  [%llu.%u] %s from %s → %s\n",
                (unsigned long long)e->timestamp.sec,
                e->timestamp.nsec,
                e->action, e->source,
-               nia_status_str(e->result));
+               eni_status_str(e->result));
     }
 }

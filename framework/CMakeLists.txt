@@ -1,4 +1,4 @@
-add_library(nia_framework STATIC
+add_library(eni_framework STATIC
     src/provider_manager.c
     src/stream_bus.c
     src/router.c
@@ -8,8 +8,8 @@ add_library(nia_framework STATIC
     src/service.c
 )
 
-target_include_directories(nia_framework PUBLIC
+target_include_directories(eni_framework PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(nia_framework PUBLIC nia_common)
+target_link_libraries(eni_framework PUBLIC eni_common)

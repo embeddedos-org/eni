@@ -1,34 +1,34 @@
-#include "nia/tool_call.h"
-#include "nia/log.h"
+#include "eni/tool_call.h"
+#include "eni/log.h"
 #include <string.h>
 #include <stdio.h>
 
-nia_status_t nia_tool_registry_init(nia_tool_registry_t *reg)
+eni_status_t eni_tool_registry_init(eni_tool_registry_t *reg)
 {
-    if (!reg) return NIA_ERR_INVALID;
+    if (!reg) return ENI_ERR_INVALID;
     memset(reg, 0, sizeof(*reg));
-    return NIA_OK;
+    return ENI_OK;
 }
 
-nia_status_t nia_tool_register(nia_tool_registry_t *reg, const nia_tool_entry_t *entry)
+eni_status_t eni_tool_register(eni_tool_registry_t *reg, const eni_tool_entry_t *entry)
 {
-    if (!reg || !entry || !entry->exec) return NIA_ERR_INVALID;
-    if (reg->count >= NIA_TOOL_REGISTRY_MAX) return NIA_ERR_OVERFLOW;
+    if (!reg || !entry || !entry->exec) return ENI_ERR_INVALID;
+    if (reg->count >= ENI_TOOL_REGISTRY_MAX) return ENI_ERR_OVERFLOW;
 
-    nia_tool_entry_t *dst = &reg->tools[reg->count];
+    eni_tool_entry_t *dst = &reg->tools[reg->count];
     size_t len = strlen(entry->name);
-    if (len >= NIA_TOOL_NAME_MAX) len = NIA_TOOL_NAME_MAX - 1;
+    if (len >= ENI_TOOL_NAME_MAX) len = ENI_TOOL_NAME_MAX - 1;
     memcpy(dst->name, entry->name, len);
     dst->name[len] = '\0';
     dst->description = entry->description;
     dst->exec        = entry->exec;
     reg->count++;
 
-    NIA_LOG_DEBUG("tool_reg", "registered tool: %s", dst->name);
-    return NIA_OK;
+    ENI_LOG_DEBUG("tool_reg", "registered tool: %s", dst->name);
+    return ENI_OK;
 }
 
-nia_tool_entry_t *nia_tool_find(nia_tool_registry_t *reg, const char *name)
+eni_tool_entry_t *eni_tool_find(eni_tool_registry_t *reg, const char *name)
 {
     if (!reg || !name) return NULL;
     for (int i = 0; i < reg->count; i++) {
@@ -39,36 +39,36 @@ nia_tool_entry_t *nia_tool_find(nia_tool_registry_t *reg, const char *name)
     return NULL;
 }
 
-nia_status_t nia_tool_exec(nia_tool_registry_t *reg, const nia_tool_call_t *call,
-                            nia_tool_result_t *result)
+eni_status_t eni_tool_exec(eni_tool_registry_t *reg, const eni_tool_call_t *call,
+                            eni_tool_result_t *result)
 {
-    if (!reg || !call || !result) return NIA_ERR_INVALID;
+    if (!reg || !call || !result) return ENI_ERR_INVALID;
 
-    nia_tool_entry_t *entry = nia_tool_find(reg, call->tool);
+    eni_tool_entry_t *entry = eni_tool_find(reg, call->tool);
     if (!entry) {
-        NIA_LOG_WARN("tool_reg", "tool not found: %s", call->tool);
-        return NIA_ERR_NOT_FOUND;
+        ENI_LOG_WARN("tool_reg", "tool not found: %s", call->tool);
+        return ENI_ERR_NOT_FOUND;
     }
 
     memset(result, 0, sizeof(*result));
-    nia_timestamp_t start = nia_timestamp_now();
+    eni_timestamp_t start = eni_timestamp_now();
 
-    nia_status_t st = entry->exec(call, result);
+    eni_status_t st = entry->exec(call, result);
     result->status = st;
 
-    nia_timestamp_t end = nia_timestamp_now();
+    eni_timestamp_t end = eni_timestamp_now();
     uint64_t elapsed_ms = (end.sec - start.sec) * 1000 +
                           (end.nsec > start.nsec
                                ? (end.nsec - start.nsec) / 1000000
                                : 0);
     result->latency_ms = (uint32_t)elapsed_ms;
 
-    NIA_LOG_DEBUG("tool_reg", "exec %s → %s (%u ms)",
-                  call->tool, nia_status_str(st), result->latency_ms);
+    ENI_LOG_DEBUG("tool_reg", "exec %s → %s (%u ms)",
+                  call->tool, eni_status_str(st), result->latency_ms);
     return st;
 }
 
-void nia_tool_registry_list(const nia_tool_registry_t *reg)
+void eni_tool_registry_list(const eni_tool_registry_t *reg)
 {
     if (!reg) return;
     printf("[tool_registry] %d tools:\n", reg->count);

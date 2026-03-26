@@ -1,14 +1,14 @@
-#ifndef NIA_PROVIDER_GENERIC_H
-#define NIA_PROVIDER_GENERIC_H
+#ifndef ENI_PROVIDER_GENERIC_H
+#define ENI_PROVIDER_GENERIC_H
 
-#include "nia/provider_contract.h"
+#include "eni/provider_contract.h"
 
-extern const nia_provider_ops_t nia_provider_generic_ops;
+extern const eni_provider_ops_t eni_provider_generic_ops;
 
 typedef struct {
-    nia_transport_t transport;
+    eni_transport_t transport;
     const char     *endpoint;
     uint32_t        timeout_ms;
-} nia_generic_config_t;
+} eni_generic_config_t;
 
-#endif /* NIA_PROVIDER_GENERIC_H */
+#endif /* ENI_PROVIDER_GENERIC_H */

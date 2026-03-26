@@ -1,4 +1,4 @@
-# 🧠 Neural Interface Adapter (NIA)
+# 🧠 Neural Interface Adapter (ENI)
 
 **Real-time neural, BCI, and assistive-input integration layer for AI systems powered by EIPC**
 
@@ -6,14 +6,14 @@
 
 ## ✨ Overview
 
-The **Neural Interface Adapter (NIA)** provides a **standardized, vendor-neutral interface** to integrate:
+The **Neural Interface Adapter (ENI)** provides a **standardized, vendor-neutral interface** to integrate:
 
 * 🧠 Brain–Computer Interfaces (BCI)
 * 🧍 Assistive input systems
 * 🤖 Human–machine interaction systems
 * 🏭 Industrial operator control platforms
 
-NIA converts neural or decoded cognitive signals into:
+ENI converts neural or decoded cognitive signals into:
 
 * structured events
 * safe tool calls
@@ -39,7 +39,7 @@ for embedded AI systems.
 ```text
 Neural Device / SDK / Decoder
             ↓
-      NIA Input Layer
+      ENI Input Layer
             ↓
    Signal / Intent Normalizer
             ↓
@@ -49,19 +49,19 @@ Neural Device / SDK / Decoder
             ↓
    Tool Mapping / Routing
             ↓
-     AIL Agent / System
+     EAI Agent / System
 ```
 
 ---
 
 # 🔌 Communication Layer: EIPC
 
-NIA communicates with AIL through:
+ENI communicates with EAI through:
 
 # ⚡ **EIPC (Embedded IPC)**
 
 ```text
-NIA ==>> EIPC ==>> AIL
+ENI ==>> EIPC ==>> EAI
 ```
 
 EIPC provides:
@@ -99,7 +99,7 @@ EIPC is a **single system with three deployment profiles**:
 
 ### Use Cases
 
-* NIA-Min ↔ AIL-Min (dev)
+* ENI-Min ↔ EAI-Min (dev)
 * local testing
 * CI pipelines
 
@@ -126,7 +126,7 @@ EIPC is a **single system with three deployment profiles**:
 
 ### Use Cases
 
-* NIA-Min ↔ AIL-Min (production)
+* ENI-Min ↔ EAI-Min (production)
 * IoT controllers
 * handheld AI systems
 
@@ -154,7 +154,7 @@ EIPC is a **single system with three deployment profiles**:
 
 ### Use Cases
 
-* NIA-Framework ↔ AIL-Framework
+* ENI-Framework ↔ EAI-Framework
 * industrial gateways
 * factory automation
 * multi-agent orchestration
@@ -197,18 +197,18 @@ eipc/
 
 ---
 
-# 🧩 NIA Variants
+# 🧩 ENI Variants
 
 ---
 
-## ⚡ NIA-Min
+## ⚡ ENI-Min
 
 **Lightweight, real-time neural intent bridge**
 
 ### Architecture
 
 ```text
-NIA-Min
+ENI-Min
 ├── input adapter
 ├── normalizer
 ├── mapper
@@ -235,14 +235,14 @@ Input → Normalize → Filter → Policy → Execute
 
 ---
 
-## 🏗 NIA-Framework
+## 🏗 ENI-Framework
 
 **Scalable neural integration framework**
 
 ### Architecture
 
 ```text
-NIA-Framework
+ENI-Framework
 ├── provider manager
 ├── stream bus
 ├── router
@@ -333,13 +333,13 @@ Stream → Normalize → Route → Policy → Execute → Audit
 
 # ⚡ Real-Time Design
 
-## NIA-Min + EIPC-Min
+## ENI-Min + EIPC-Min
 
 * synchronous pipeline
 * ultra-low latency
 * deterministic execution
 
-## NIA-Framework + EIPC-Framework
+## ENI-Framework + EIPC-Framework
 
 * multi-lane routing
 * priority classes (P0–P3)
@@ -368,9 +368,9 @@ Stream → Normalize → Route → Policy → Execute → Audit
 # 🚀 Build & Run
 
 ```bash
-forge add ai-neural-adapter
-forge system
-forge ai run
+eos add ai-neural-adapter
+eos system
+eos ai run
 ```
 
 ---
@@ -380,7 +380,7 @@ forge ai run
 ## Phase 1
 
 * define schemas
-* build NIA-Min + EIPC-Lite
+* build ENI-Min + EIPC-Lite
 
 ## Phase 2
 
@@ -389,7 +389,7 @@ forge ai run
 
 ## Phase 3
 
-* build NIA-Framework
+* build ENI-Framework
 * add EIPC-Framework routing
 
 ## Phase 4
@@ -401,7 +401,7 @@ forge ai run
 
 # ⚠️ Important Notes
 
-* NIA does **not decode raw neural signals**
+* ENI does **not decode raw neural signals**
 * external SDKs are required
 * vendor integrations depend on availability
 * regulatory compliance may apply
@@ -410,12 +410,12 @@ forge ai run
 
 # 🌍 Supported Environments
 
-NIA + EIPC runs on:
+ENI + EIPC runs on:
 
 * 🐧 Linux / Ubuntu
 * 🪟 Windows (dev/test)
 * 🐳 Containers
-* ⚙️ ForgeOS (optimized target)
+* ⚙️ EoS (optimized target)
 
 ---
 
@@ -431,11 +431,11 @@ Never tightly couple to OS.
 
 # 🌟 Summary
 
-> **NIA + EIPC = Secure, real-time neural-to-AI bridge**
+> **ENI + EIPC = Secure, real-time neural-to-AI bridge**
 
-* NIA handles neural input
+* ENI handles neural input
 * EIPC handles communication + security
-* AIL executes intelligent behavior
+* EAI executes intelligent behavior
 
 ---
 

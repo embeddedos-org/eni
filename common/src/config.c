@@ -154,4 +154,3 @@ void eni_config_dump(const eni_config_t *cfg)
            cfg->observability.metrics, cfg->observability.audit,
            cfg->observability.trace);
 }
-}

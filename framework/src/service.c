@@ -112,8 +112,8 @@ eni_status_t eni_fw_service_tick(eni_fw_service_t *svc)
                 (pri == ENI_ROUTE_CRITICAL || pri == ENI_ROUTE_NORMAL)) {
                 eni_tool_call_t call;
                 memset(&call, 0, sizeof(call));
-                call.tool_name = bus_ev.payload.intent.name;
-                call.priority  = pri;
+                strncpy(call.tool, bus_ev.payload.intent.name,
+                        ENI_TOOL_NAME_MAX - 1);
 
                 eni_tool_result_t result;
                 memset(&result, 0, sizeof(result));

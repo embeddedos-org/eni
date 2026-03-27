@@ -9,26 +9,26 @@ static int tests_run = 0, tests_passed = 0, tests_failed = 0;
 #define PASS() do { tests_passed++; printf("[PASS]\n"); } while(0)
 #define FAIL(msg) do { tests_failed++; printf("[FAIL] %s\n", msg); } while(0)
 
+static eni_fw_stream_bus_t g_bus;
+
 static void test_stream_bus_empty(void)
 {
     TEST(stream_bus_empty);
-    eni_fw_stream_bus_t bus;
-    eni_fw_stream_bus_init(&bus);
-    if (!eni_fw_stream_bus_empty(&bus)) { FAIL("should be empty"); return; }
+    eni_fw_stream_bus_init(&g_bus);
+    if (!eni_fw_stream_bus_empty(&g_bus)) { FAIL("should be empty"); return; }
     PASS();
 }
 
 static void test_stream_bus_push_pop(void)
 {
     TEST(stream_bus_push_pop);
-    eni_fw_stream_bus_t bus;
-    eni_fw_stream_bus_init(&bus);
+    eni_fw_stream_bus_init(&g_bus);
     eni_event_t ev;
     eni_event_init(&ev, ENI_EVENT_INTENT, "test");
     eni_event_set_intent(&ev, "move_left", 0.9f);
-    eni_fw_stream_bus_push(&bus, &ev);
+    eni_fw_stream_bus_push(&g_bus, &ev);
     eni_event_t popped;
-    eni_fw_stream_bus_pop(&bus, &popped);
+    eni_fw_stream_bus_pop(&g_bus, &popped);
     if (popped.type != ENI_EVENT_INTENT) { FAIL("wrong type"); return; }
     PASS();
 }

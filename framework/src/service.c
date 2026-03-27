@@ -106,7 +106,25 @@ eni_status_t eni_fw_service_tick(eni_fw_service_t *svc)
         if (st == ENI_OK) {
             /* Route and classify */
             eni_route_priority_t pri = eni_fw_router_classify(&svc->router, &bus_ev);
-            (void)pri; /* used for future priority queuing */
+
+            /* Dispatch intent events through orchestrator */
+            if (bus_ev.type == ENI_EVENT_INTENT &&
+                (pri == ENI_ROUTE_CRITICAL || pri == ENI_ROUTE_NORMAL)) {
+                eni_tool_call_t call;
+                memset(&call, 0, sizeof(call));
+                call.tool_name = bus_ev.payload.intent.name;
+                call.priority  = pri;
+
+                eni_tool_result_t result;
+                memset(&result, 0, sizeof(result));
+
+                eni_status_t dispatch_st = eni_fw_orchestrator_dispatch(
+                    &svc->orchestrator, &bus_ev, &call, &result);
+                if (dispatch_st != ENI_OK) {
+                    ENI_LOG_WARN("fw.service", "orchestrator dispatch failed for '%s'",
+                                 bus_ev.payload.intent.name);
+                }
+            }
 
             /* Broadcast to connectors */
             eni_fw_connector_broadcast(&svc->connectors, &bus_ev);

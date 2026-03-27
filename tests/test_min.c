@@ -78,7 +78,7 @@ static void test_mapper_add_and_resolve(void)
     eni_event_t ev;
     memset(&ev, 0, sizeof(ev));
     ev.type = ENI_EVENT_INTENT;
-    ev.payload.intent.name = "play_music";
+    strncpy(ev.payload.intent.name, "play_music", ENI_EVENT_INTENT_MAX - 1);
     ev.payload.intent.confidence = 0.95f;
 
     eni_tool_call_t call;
@@ -86,7 +86,7 @@ static void test_mapper_add_and_resolve(void)
 
     st = eni_min_mapper_resolve(&mapper, &ev, &call);
     if (st != ENI_OK) { FAIL("mapper resolve failed"); return; }
-    if (strcmp(call.tool_name, "media_play") != 0) { FAIL("wrong tool resolved"); return; }
+    if (strcmp(call.tool, "media_play") != 0) { FAIL("wrong tool resolved"); return; }
     PASS();
 }
 
@@ -99,7 +99,7 @@ static void test_mapper_resolve_unknown(void)
     eni_event_t ev;
     memset(&ev, 0, sizeof(ev));
     ev.type = ENI_EVENT_INTENT;
-    ev.payload.intent.name = "unknown_intent";
+    strncpy(ev.payload.intent.name, "unknown_intent", ENI_EVENT_INTENT_MAX - 1);
     ev.payload.intent.confidence = 0.95f;
 
     eni_tool_call_t call;
@@ -121,7 +121,7 @@ static void test_normalizer_passthrough(void)
     eni_event_t raw;
     memset(&raw, 0, sizeof(raw));
     raw.type = ENI_EVENT_INTENT;
-    raw.payload.intent.name = "test_intent";
+    strncpy(raw.payload.intent.name, "test_intent", ENI_EVENT_INTENT_MAX - 1);
     raw.payload.intent.confidence = 0.85f;
 
     eni_event_t normalized;

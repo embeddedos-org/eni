@@ -27,6 +27,7 @@ typedef struct {
     uint64_t               events_processed;
     uint64_t               events_filtered;
     uint64_t               events_executed;
+    void                  *eipc_bridge; /* eni_eipc_bridge_t* when ENI_EIPC_ENABLED */
 } eni_min_service_t;
 
 eni_status_t eni_min_service_init(eni_min_service_t *svc, const eni_config_t *cfg,

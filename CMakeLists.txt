@@ -13,6 +13,12 @@ option(ENI_BUILD_FRAMEWORK "Build ENI-Framework industrial platform" ON)
 option(ENI_BUILD_CLI       "Build ENI CLI tool"                      ON)
 option(ENI_BUILD_TESTS     "Build unit tests"                        OFF)
 
+option(ENI_EIPC_ENABLED    "Enable EIPC integration for ENI→EAI communication" OFF)
+
+if(ENI_EIPC_ENABLED)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../eipc/sdk/c ${CMAKE_BINARY_DIR}/eipc_c_sdk EXCLUDE_FROM_ALL)
+endif()
+
 option(ENI_PLATFORM_EOS   "Enable EoS platform adapter"   OFF)
 option(ENI_PLATFORM_LINUX     "Enable Linux platform adapter"     ON)
 option(ENI_PLATFORM_WINDOWS   "Enable Windows platform adapter"   OFF)

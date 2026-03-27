@@ -1,5 +1,8 @@
 #include "eni_min/service.h"
 #include "eni/log.h"
+#ifdef ENI_EIPC_ENABLED
+#include "eni/eipc_bridge.h"
+#endif
 #include <string.h>
 #include <stdio.h>
 
@@ -94,6 +97,19 @@ eni_status_t eni_min_service_tick(eni_min_service_t *svc)
     eni_tool_call_t call;
     st = eni_min_mapper_resolve(&svc->mapper, &norm_ev, &call);
     if (st != ENI_OK) return st;
+
+#ifdef ENI_EIPC_ENABLED
+    if (svc->eipc_bridge) {
+        eni_eipc_bridge_t *bridge = (eni_eipc_bridge_t *)svc->eipc_bridge;
+        eni_eipc_bridge_send_intent(bridge,
+            norm_ev.payload.intent.name,
+            norm_ev.payload.intent.confidence);
+        if (bridge->mode == ENI_EIPC_MODE_FORWARD_ONLY) {
+            svc->events_executed++;
+            return ENI_OK;
+        }
+    }
+#endif
 
     /* Execute */
     eni_tool_result_t result;

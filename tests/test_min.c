@@ -43,7 +43,7 @@ static void test_filter_accept_high_confidence(void)
     eni_event_t ev;
     memset(&ev, 0, sizeof(ev));
     ev.type = ENI_EVENT_INTENT;
-    strncpy(ev.payload.intent.name, \ high_conf\, ENI_EVENT_INTENT_MAX - 1);
+    strncpy(ev.payload.intent.name, "high_conf", ENI_EVENT_INTENT_MAX - 1);
     ev.payload.intent.confidence = 0.90f;
 
     if (!eni_min_filter_accept(&filter, &ev)) { FAIL("should accept high confidence"); return; }
@@ -151,4 +151,3 @@ int main(void)
     printf("\nResults: %d/%d passed\n", tests_passed, tests_run);
     return (tests_passed == tests_run) ? 0 : 1;
 }
-

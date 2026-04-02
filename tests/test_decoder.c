@@ -27,7 +27,7 @@ static void test_energy_decoder_idle(void) {
     cfg.confidence_threshold = 1.0f;
     eni_decoder_init(&dec, &eni_decoder_energy_ops, &cfg);
     eni_dsp_features_t feat = {0}; /* zero features → low energy → idle */
-    eni_decode_result_t result;
+    eni_decode_result_t result = {0};
     eni_status_t rc = eni_decoder_decode(&dec, &feat, &result);
     assert(rc == ENI_OK);
     assert(result.count == 4);
@@ -43,7 +43,7 @@ static void test_energy_decoder_high_energy(void) {
     eni_decoder_init(&dec, &eni_decoder_energy_ops, &cfg);
     eni_dsp_features_t feat = {0};
     feat.total_power = 100.0f; /* high energy → motor_execute */
-    eni_decode_result_t result;
+    eni_decode_result_t result = {0};
     eni_decoder_decode(&dec, &feat, &result);
     assert(strcmp(result.intents[result.best_idx].name, "motor_execute") == 0);
     eni_decoder_shutdown(&dec);
@@ -69,7 +69,7 @@ static void test_nn_decoder_fallback(void) {
     eni_dsp_features_t feat = {0};
     feat.band_power[2] = 0.5f; /* some alpha */
     feat.total_power = 1.0f;
-    eni_decode_result_t result;
+    eni_decode_result_t result = {0};
     eni_status_t rc = eni_decoder_decode(&dec, &feat, &result);
     assert(rc == ENI_OK);
     assert(result.count == 4);

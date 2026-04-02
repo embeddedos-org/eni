@@ -40,7 +40,7 @@ static void test_eeg_read_packet(void) {
     cfg.channels = 21;
     eni_eeg_init(&cfg);
     eni_eeg_connect("EEG-002");
-    eni_eeg_packet_t pkt;
+    eni_eeg_packet_t pkt = {0};
     assert(eni_eeg_read_packet(&pkt) == 0);
     assert(pkt.channel_count == 21);
     /* Check non-zero data (simulated signal) */

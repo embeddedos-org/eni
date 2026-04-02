@@ -14,7 +14,8 @@ static void test_energy_decoder_init(void) {
     eni_decoder_t dec;
     eni_decoder_config_t cfg = {0};
     cfg.confidence_threshold = 0.5f;
-    assert(eni_decoder_init(&dec, &eni_decoder_energy_ops, &cfg) == ENI_OK);
+    eni_status_t rc = eni_decoder_init(&dec, &eni_decoder_energy_ops, &cfg);
+    assert(rc == ENI_OK);
     assert(strcmp(dec.name, "energy") == 0);
     eni_decoder_shutdown(&dec);
     PASS("energy_decoder_init");
@@ -27,7 +28,8 @@ static void test_energy_decoder_idle(void) {
     eni_decoder_init(&dec, &eni_decoder_energy_ops, &cfg);
     eni_dsp_features_t feat = {0}; /* zero features → low energy → idle */
     eni_decode_result_t result;
-    assert(eni_decoder_decode(&dec, &feat, &result) == ENI_OK);
+    eni_status_t rc = eni_decoder_decode(&dec, &feat, &result);
+    assert(rc == ENI_OK);
     assert(result.count == 4);
     assert(strcmp(result.intents[result.best_idx].name, "idle") == 0);
     eni_decoder_shutdown(&dec);
@@ -52,7 +54,8 @@ static void test_nn_decoder_init(void) {
     eni_decoder_t dec;
     eni_decoder_config_t cfg = {0};
     cfg.num_classes = 4;
-    assert(eni_decoder_init(&dec, &eni_decoder_nn_ops, &cfg) == ENI_OK);
+    eni_status_t rc = eni_decoder_init(&dec, &eni_decoder_nn_ops, &cfg);
+    assert(rc == ENI_OK);
     assert(strcmp(dec.name, "nn") == 0);
     eni_decoder_shutdown(&dec);
     PASS("nn_decoder_init");
@@ -67,7 +70,8 @@ static void test_nn_decoder_fallback(void) {
     feat.band_power[2] = 0.5f; /* some alpha */
     feat.total_power = 1.0f;
     eni_decode_result_t result;
-    assert(eni_decoder_decode(&dec, &feat, &result) == ENI_OK);
+    eni_status_t rc = eni_decoder_decode(&dec, &feat, &result);
+    assert(rc == ENI_OK);
     assert(result.count == 4);
     assert(result.best_idx >= 0 && result.best_idx < 4);
     /* Confidences should sum to ~1 */

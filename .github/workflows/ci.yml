@@ -1,31 +1,57 @@
 name: CI
-
 on:
-  workflow_dispatch:
-  repository_dispatch:
-    types: [dependency-update]
   push:
-    branches: [master]
+    branches: [main, develop]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
-  build:
-    name: Build (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
+  build-and-test:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-22.04, windows-2022, macos-13]
+        compiler: [gcc, clang]
+        exclude:
+          - os: windows-2022
+            compiler: clang
+        include:
+          - os: windows-2022
+            compiler: msvc
 
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build cppcheck
+
+      - name: Set compiler (GCC)
+        if: matrix.compiler == 'gcc' && runner.os == 'Linux'
+        run: |
+          echo "CC=gcc" >> $GITHUB_ENV
+          echo "CXX=g++" >> $GITHUB_ENV
+
+      - name: Set compiler (Clang)
+        if: matrix.compiler == 'clang'
+        run: |
+          echo "CC=clang" >> $GITHUB_ENV
+          echo "CXX=clang++" >> $GITHUB_ENV
+
       - name: Configure
-        run: cmake -B build -DENI_BUILD_TESTS=ON
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENI_BUILD_TESTS=ON
 
       - name: Build
-        run: cmake --build build --config Release
+        run: cmake --build build
 
       - name: Test
-        run: ctest --test-dir build --output-on-failure -C Release
+        run: ctest --test-dir build --output-on-failure --timeout 120
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.compiler }}
+          path: build/Testing/
+          retention-days: 7

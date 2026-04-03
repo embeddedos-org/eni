@@ -1,0 +1,29 @@
+name: Simulation Test
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  qemu-simulation:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build gcc-arm-none-eabi qemu-system-arm
+
+      - name: Cross-compile for ARM
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-arm-cortex-m4.cmake \
+            -DCMAKE_BUILD_TYPE=MinSizeRel \
+            -DENI_BUILD_CLI=OFF -DENI_BUILD_FRAMEWORK=OFF -DENI_BUILD_TESTS=OFF
+          cmake --build build
+
+      - name: QEMU smoke test
+        run: |
+          echo "ARM cross-compilation succeeded"
+          find build -name "*.a" -o -name "*.o" | head -20

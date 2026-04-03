@@ -14,7 +14,7 @@
 #include "eni/provider_contract.h"
 
 #define ENI_VERSION_MAJOR 0
-#define ENI_VERSION_MINOR 1
+#define ENI_VERSION_MINOR 2
 #define ENI_VERSION_PATCH 0
 #define ENI_VERSION_STRING "0.2.0"
 

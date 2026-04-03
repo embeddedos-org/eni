@@ -1,12 +1,17 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 project(ENI
-    VERSION 0.1.0
+    VERSION 0.2.0
     DESCRIPTION "Neural Interface Adapter — BCI/sensor input integration for EoS AI Layer"
     LANGUAGES C
 )
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+include(cmake/sanitizers.cmake)
+include(cmake/coverage.cmake)
+include(cmake/static-analysis.cmake)
 
 option(ENI_BUILD_MIN       "Build ENI-Min lightweight runtime"       ON)
 option(ENI_BUILD_FRAMEWORK "Build ENI-Framework industrial platform" ON)
@@ -18,6 +23,15 @@ option(ENI_BUILD_DSP       "Build DSP signal processing module"      ON)
 option(ENI_BUILD_DECODER   "Build neural decoder module"             ON)
 option(ENI_BUILD_NN        "Build neural network inference engine"    ON)
 option(ENI_BUILD_STIMULATOR "Build stimulator/feedback subsystem"    ON)
+
+option(ENI_BUILD_SIM         "Build simulation environment"          OFF)
+option(ENI_BUILD_BINDINGS_CPP "Build C++ bindings"                   OFF)
+option(ENI_BUILD_ROS2        "Build ROS 2 integration"               OFF)
+option(ENI_BUILD_ONI         "Build ONI compliance layer"            OFF)
+option(ENI_BUILD_TFLITE      "Build TFLite Micro integration"        OFF)
+option(ENI_BUILD_EIPC_STREAM "Build EIPC streaming module"           OFF)
+option(ENI_ONNX_ENABLED      "Enable ONNX model loading"            OFF)
+option(ENI_WIRELESS_ENABLED   "Enable wireless BCI provider"        OFF)
 
 if(ENI_EIPC_ENABLED)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../eipc/sdk/c ${CMAKE_BINARY_DIR}/eipc_c_sdk EXCLUDE_FROM_ALL)
@@ -33,13 +47,8 @@ if(WIN32)
     set(ENI_PLATFORM_WINDOWS ON)
 endif()
 
-# Common library (shared contracts + utilities)
 add_subdirectory(common)
-
-# Platform adapters
 add_subdirectory(platform)
-
-# Providers (simulator, generic decoder, EEG, stimulator)
 add_subdirectory(providers)
 
 if(ENI_BUILD_MIN)
@@ -52,6 +61,18 @@ endif()
 
 if(ENI_BUILD_CLI)
     add_subdirectory(cli)
+endif()
+
+if(ENI_BUILD_SIM)
+    add_subdirectory(sim)
+endif()
+
+if(ENI_BUILD_BINDINGS_CPP)
+    add_subdirectory(bindings/cpp)
+endif()
+
+if(ENI_BUILD_ROS2 OR ENI_BUILD_ONI OR ENI_BUILD_EIPC_STREAM)
+    add_subdirectory(integrations)
 endif()
 
 if(ENI_BUILD_TESTS)
@@ -67,6 +88,13 @@ message(STATUS "  CLI:           ${ENI_BUILD_CLI}")
 message(STATUS "  DSP:           ${ENI_BUILD_DSP}")
 message(STATUS "  Decoder:       ${ENI_BUILD_DECODER}")
 message(STATUS "  NN:            ${ENI_BUILD_NN}")
+message(STATUS "  ONNX:          ${ENI_ONNX_ENABLED}")
 message(STATUS "  Stimulator:    ${ENI_BUILD_STIMULATOR}")
+message(STATUS "  Simulation:    ${ENI_BUILD_SIM}")
+message(STATUS "  C++ Bindings:  ${ENI_BUILD_BINDINGS_CPP}")
+message(STATUS "  TFLite Micro:  ${ENI_BUILD_TFLITE}")
+message(STATUS "  ROS 2:         ${ENI_BUILD_ROS2}")
+message(STATUS "  ONI:           ${ENI_BUILD_ONI}")
+message(STATUS "  Wireless BCI:  ${ENI_WIRELESS_ENABLED}")
 message(STATUS "  Platform:      eos=${ENI_PLATFORM_EOS} linux=${ENI_PLATFORM_LINUX} win=${ENI_PLATFORM_WINDOWS} container=${ENI_PLATFORM_CONTAINER}")
 message(STATUS "--------------------------------------------")

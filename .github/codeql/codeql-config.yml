@@ -1,0 +1,9 @@
+name: c-cpp
+queries:
+  - uses: security-and-quality
+paths-ignore:
+  - tests/**
+  - build/**
+  - docker/**
+  - sdk/**
+  - gui/**

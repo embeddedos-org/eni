@@ -77,12 +77,12 @@ static void config_apply_kv(eni_config_t *cfg, const char *key, const char *valu
         else if (strcmp(value, "features_intent") == 0)
             cfg->mode = ENI_MODE_FEATURES_INTENT;
     } else if (strcmp(key, "confidence_threshold") == 0) {
-        cfg->filter.min_confidence = (float)atof(value);
+        cfg->filter.min_confidence = (float)strtod(value, NULL);
     } else if (strcmp(key, "debounce_ms") == 0) {
-        cfg->filter.debounce_ms = (uint32_t)atoi(value);
+        cfg->filter.debounce_ms = (uint32_t)strtol(value, NULL, 10);
     } else if (strcmp(key, "max_providers") == 0) {
         /* Cap to valid range; ENI_CONFIG_MAX_PROVIDERS defined in config.h */
-        int n = atoi(value);
+        int n = (int)strtol(value, NULL, 10);
         cfg->provider_count = (n > 0 && n <= ENI_CONFIG_MAX_PROVIDERS) ? n : 0;
     } else if (strcmp(key, "default_deny") == 0) {
         cfg->policy.require_confirmation = (strcmp(value, "true") == 0);
@@ -125,7 +125,7 @@ eni_status_t eni_config_load_file(eni_config_t *cfg, const char *path)
         config_apply_kv(cfg, key, value);
     }
 
-    fclose(fp);
+    if (fclose(fp) != 0) { ENI_LOG_WARN("config", "failed to close config file: %s", path); }
     ENI_LOG_INFO("config", "loaded config from %s", path);
     return ENI_OK;
 }

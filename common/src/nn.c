@@ -34,7 +34,7 @@ static void nn_softmax(float *data, int n) {
         for (int i = 0; i < n; i++) data[i] /= sum;
 }
 
-static void nn_apply_activation(float *data, int n, eni_nn_activation_t act) {
+static void nn_apply_activation(float *data, int n, eni_nn_activation_t act) { // NOLINT(bugprone-easily-swappable-parameters)
     switch (act) {
     case ENI_NN_RELU:    nn_relu(data, n);     break;
     case ENI_NN_SIGMOID: nn_sigmoid(data, n);  break;

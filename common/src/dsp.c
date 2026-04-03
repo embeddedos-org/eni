@@ -113,7 +113,7 @@ float eni_dsp_alpha_power(const eni_dsp_psd_result_t *psd) { return eni_dsp_band
 float eni_dsp_beta_power(const eni_dsp_psd_result_t *psd)  { return eni_dsp_band_power(psd, 13.0f, 30.0f); }
 float eni_dsp_gamma_power(const eni_dsp_psd_result_t *psd) { return eni_dsp_band_power(psd, 30.0f, 100.0f); }
 
-eni_dsp_artifact_t eni_dsp_artifact_detect(const float *signal, int n, float threshold) {
+eni_dsp_artifact_t eni_dsp_artifact_detect(const float *signal, int n, float threshold) { // NOLINT(bugprone-easily-swappable-parameters)
     eni_dsp_artifact_t art = {false, false, false, 0.0f};
     if (!signal || n <= 0) return art;
 
@@ -134,7 +134,7 @@ eni_dsp_artifact_t eni_dsp_artifact_detect(const float *signal, int n, float thr
     return art;
 }
 
-void eni_dsp_epoch_init(eni_dsp_epoch_t *epoch, int capacity, float sample_rate) {
+void eni_dsp_epoch_init(eni_dsp_epoch_t *epoch, int capacity, float sample_rate) { // NOLINT(bugprone-easily-swappable-parameters)
     if (!epoch) return;
     memset(epoch, 0, sizeof(*epoch));
     if (capacity > ENI_DSP_MAX_FFT_SIZE) capacity = ENI_DSP_MAX_FFT_SIZE;

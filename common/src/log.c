@@ -19,7 +19,8 @@ void eni_log_set_output(FILE *fp)
     s_log_out = fp;
 }
 
-void eni_log_write(eni_log_level_t level, const char *module, const char *fmt, ...)
+void eni_log_write(eni_log_level_t level, const char *module, // NOLINT(bugprone-easily-swappable-parameters)
+                   const char *fmt, ...)
 {
     if (level < s_log_level) return;
 
@@ -38,16 +39,16 @@ void eni_log_write(eni_log_level_t level, const char *module, const char *fmt, .
 
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
-    fprintf(out, "%04d-%02d-%02d %02d:%02d:%02d [%s] [%s] ",
-            t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
-            t->tm_hour, t->tm_min, t->tm_sec,
-            level_str, module ? module : "eni");
+    (void)fprintf(out, "%04d-%02d-%02d %02d:%02d:%02d [%s] [%s] ",
+                  t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+                  t->tm_hour, t->tm_min, t->tm_sec,
+                  level_str, module ? module : "eni");
 
     va_list args;
     va_start(args, fmt);
-    vfprintf(out, fmt, args);
+    (void)vfprintf(out, fmt, args);
     va_end(args);
 
-    fprintf(out, "\n");
-    fflush(out);
+    (void)fprintf(out, "\n");
+    (void)fflush(out);
 }

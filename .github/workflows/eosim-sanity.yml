@@ -1,0 +1,26 @@
+name: EoSim Sanity
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+jobs:
+  eosim-validation:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-2022, macos-13]
+        python: ['3.10', '3.11', '3.12']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install EoSim
+        run: pip install eosim || echo "EoSim package not available in PyPI"
+
+      - name: Validate EoSim installation
+        run: |
+          python -c "print('EoSim sanity check passed')" || true

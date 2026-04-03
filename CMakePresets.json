@@ -1,0 +1,138 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 20, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "default",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "ENI_BUILD_TESTS": "ON"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "inherits": "default",
+      "displayName": "Linux Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS": "-Wall -Wextra -Wpedantic -Werror"
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" }
+    },
+    {
+      "name": "linux-release",
+      "inherits": "default",
+      "displayName": "Linux Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_FLAGS": "-Wall -Wextra -DNDEBUG -O2"
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Linux" }
+    },
+    {
+      "name": "windows-debug",
+      "inherits": "default",
+      "displayName": "Windows Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "windows-release",
+      "inherits": "default",
+      "displayName": "Windows Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Windows" }
+    },
+    {
+      "name": "macos-debug",
+      "inherits": "default",
+      "displayName": "macOS Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_FLAGS": "-Wall -Wextra -Wpedantic"
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
+    },
+    {
+      "name": "arm-cortex-m4",
+      "inherits": "default",
+      "displayName": "ARM Cortex-M4 Cross-Compile",
+      "toolchainFile": "${sourceDir}/cmake/toolchain-arm-cortex-m4.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
+        "ENI_BUILD_CLI": "OFF",
+        "ENI_BUILD_FRAMEWORK": "OFF",
+        "ENI_BUILD_TESTS": "OFF",
+        "ENI_PLATFORM_LINUX": "OFF",
+        "ENI_PLATFORM_EOS": "ON"
+      }
+    },
+    {
+      "name": "riscv32",
+      "inherits": "default",
+      "displayName": "RISC-V 32-bit Cross-Compile",
+      "toolchainFile": "${sourceDir}/cmake/toolchain-riscv32.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
+        "ENI_BUILD_CLI": "OFF",
+        "ENI_BUILD_FRAMEWORK": "OFF",
+        "ENI_BUILD_TESTS": "OFF",
+        "ENI_PLATFORM_LINUX": "OFF",
+        "ENI_PLATFORM_EOS": "ON"
+      }
+    },
+    {
+      "name": "native-asan",
+      "inherits": "default",
+      "displayName": "Native + AddressSanitizer",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENI_ENABLE_ASAN": "ON"
+      }
+    },
+    {
+      "name": "native-ubsan",
+      "inherits": "default",
+      "displayName": "Native + UndefinedBehaviorSanitizer",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENI_ENABLE_UBSAN": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "linux-debug",    "configurePreset": "linux-debug" },
+    { "name": "linux-release",  "configurePreset": "linux-release" },
+    { "name": "windows-debug",  "configurePreset": "windows-debug" },
+    { "name": "windows-release","configurePreset": "windows-release" },
+    { "name": "macos-debug",    "configurePreset": "macos-debug" },
+    { "name": "arm-cortex-m4",  "configurePreset": "arm-cortex-m4" },
+    { "name": "riscv32",        "configurePreset": "riscv32" },
+    { "name": "native-asan",    "configurePreset": "native-asan" },
+    { "name": "native-ubsan",   "configurePreset": "native-ubsan" }
+  ],
+  "testPresets": [
+    {
+      "name": "linux-debug",
+      "configurePreset": "linux-debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "unit-tests",
+      "configurePreset": "linux-debug",
+      "filter": { "include": { "label": "unit" } }
+    },
+    {
+      "name": "integration-tests",
+      "configurePreset": "linux-debug",
+      "filter": { "include": { "label": "integration" } }
+    }
+  ]
+}

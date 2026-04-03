@@ -1,0 +1,20 @@
+services:
+  build:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.build
+      target: build-native
+    volumes:
+      - ../build:/eni/build
+
+  test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.test
+    command: ctest --test-dir build --output-on-failure
+
+  cross-arm:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.build
+      target: build-arm

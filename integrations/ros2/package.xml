@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>eni_ros2</name>
+  <version>0.2.0</version>
+  <description>eNI ROS 2 integration for neural BCI applications</description>
+  <maintainer email="dev@eos-project.org">EoS Project</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclc</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

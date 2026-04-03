@@ -1,0 +1,43 @@
+name: Weekly
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  comprehensive-build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build cppcheck clang-tidy gcc-arm-none-eabi lcov
+
+      - name: Build with static analysis
+        run: |
+          set -o pipefail
+          set -o pipefail
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug \
+            -DENI_BUILD_TESTS=ON \
+            -DENI_ENABLE_CPPCHECK=ON \
+            -DENI_ENABLE_CLANG_TIDY=ON
+          cmake --build build 2>&1 | tee build-analysis.log
+
+      - name: Run full test suite
+        run: ctest --test-dir build --output-on-failure --timeout 120
+
+      - name: Dependency audit
+        run: |
+          echo "=== CMake Dependencies ==="
+          cmake -B build-audit -G Ninja -DCMAKE_BUILD_TYPE=Release -DENI_BUILD_TESTS=OFF 2>&1 | grep -i "found\|not found\|version"
+          echo "=== System Libraries ==="
+          ldd build/eni 2>/dev/null || echo "Static build or not built"
+
+      - name: Upload analysis report
+        uses: actions/upload-artifact@v7
+        with:
+          name: weekly-analysis
+          path: build-analysis.log
+          retention-days: 30

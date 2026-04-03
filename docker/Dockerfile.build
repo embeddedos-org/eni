@@ -1,0 +1,27 @@
+FROM ubuntu:22.04 AS base
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential gcc g++ clang cmake ninja-build \
+    gcc-arm-none-eabi \
+    lcov cppcheck \
+    qemu-user-static \
+    git ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /eni
+COPY . .
+
+FROM base AS build-native
+RUN cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DENI_BUILD_TESTS=ON \
+    && cmake --build build
+
+FROM base AS build-arm
+RUN cmake -B build-arm -G Ninja \
+    -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-arm-cortex-m4.cmake \
+    -DCMAKE_BUILD_TYPE=MinSizeRel \
+    -DENI_BUILD_CLI=OFF -DENI_BUILD_FRAMEWORK=OFF -DENI_BUILD_TESTS=OFF \
+    && cmake --build build-arm
+
+FROM build-native AS test
+RUN cd build && ctest --output-on-failure --timeout 120

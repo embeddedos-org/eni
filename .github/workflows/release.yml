@@ -65,7 +65,7 @@ jobs:
           cp -r framework/include/* staging/include/ 2>/dev/null || true
           cp -r min/include/* staging/include/ 2>/dev/null || true
           tar czf eni-${{ steps.version.outputs.version }}-${{ matrix.arch }}.tar.gz -C staging .
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: eni-${{ matrix.arch }}
           path: "*.tar.gz"

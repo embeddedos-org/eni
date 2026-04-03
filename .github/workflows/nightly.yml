@@ -8,7 +8,7 @@ jobs:
   full-build-and-test:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -29,7 +29,7 @@ jobs:
       matrix:
         sanitizer: [asan, ubsan]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y cmake ninja-build
@@ -53,7 +53,7 @@ jobs:
       matrix:
         target: [arm-cortex-m4, riscv32]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install ARM toolchain
         if: matrix.target == 'arm-cortex-m4'

@@ -10,7 +10,7 @@ jobs:
   validate:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build and test
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DENI_BUILD_TESTS=ON
@@ -21,7 +21,7 @@ jobs:
     needs: validate
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install cross-compilers
         run: |

@@ -1,57 +1,103 @@
 name: CI
+
 on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [dependency-update]
   push:
-    branches: [main, develop]
+    branches: [main, master, develop]
   pull_request:
-    branches: [main]
+    branches: [main, master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-test:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, windows-2022, macos-13]
-        compiler: [gcc, clang]
-        exclude:
-          - os: windows-2022
-            compiler: clang
-        include:
-          - os: windows-2022
-            compiler: msvc
-
-    runs-on: ${{ matrix.os }}
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Install dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build cppcheck
-
-      - name: Set compiler (GCC)
-        if: matrix.compiler == 'gcc' && runner.os == 'Linux'
-        run: |
-          echo "CC=gcc" >> $GITHUB_ENV
-          echo "CXX=g++" >> $GITHUB_ENV
-
-      - name: Set compiler (Clang)
-        if: matrix.compiler == 'clang'
-        run: |
-          echo "CC=clang" >> $GITHUB_ENV
-          echo "CXX=clang++" >> $GITHUB_ENV
-
+      - uses: actions/checkout@v4
       - name: Configure
-        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DENI_BUILD_TESTS=ON -DENI_PROVIDER_EEG=ON -DENI_BUILD_DSP=ON -DENI_BUILD_NN=ON -DENI_BUILD_DECODER=ON -DENI_BUILD_STIMULATOR=ON -DENI_PROVIDER_STIMULATOR_SIM=ON
-
+        run: cmake -B build -DENI_BUILD_TESTS=ON
       - name: Build
-        run: cmake --build build
-
+        run: cmake --build build --config Release
       - name: Test
-        run: ctest --test-dir build --output-on-failure --timeout 120
+        run: ctest --test-dir build --output-on-failure -C Release
 
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v7
+  cross-compile:
+    name: Cross (${{ matrix.arch }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: aarch64
+            pkg: gcc-aarch64-linux-gnu
+            cc: aarch64-linux-gnu-gcc
+          - arch: arm
+            pkg: gcc-arm-linux-gnueabihf
+            cc: arm-linux-gnueabihf-gcc
+          - arch: riscv64
+            pkg: gcc-riscv64-linux-gnu
+            cc: riscv64-linux-gnu-gcc
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cross-compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.pkg }}
+      - name: Cross-compile
+        run: |
+          cmake -B build \
+            -DCMAKE_C_COMPILER=${{ matrix.cc }} \
+            -DCMAKE_SYSTEM_NAME=Linux \
+            -DENI_BUILD_TESTS=OFF
+          cmake --build build
+
+  sanitize:
+    name: Sanitizers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build with ASAN/UBSAN
+        run: |
+          cmake -B build \
+            -DENI_BUILD_TESTS=ON \
+            -DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
+          cmake --build build
+      - name: Run tests under sanitizers
+        run: ctest --test-dir build --output-on-failure
+        env:
+          ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build with coverage
+        run: |
+          cmake -B build \
+            -DENI_BUILD_TESTS=ON \
+            -DCMAKE_C_FLAGS="--coverage" \
+            -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+          cmake --build build
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure
+      - name: Generate coverage report
+        run: |
+          sudo apt-get install -y lcov
+          lcov --capture --directory build --output-file coverage.info --ignore-errors mismatch
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info
+          lcov --list coverage.info
+      - uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.compiler }}
-          path: build/Testing/
-          retention-days: 7
+          name: coverage
+          path: coverage.info

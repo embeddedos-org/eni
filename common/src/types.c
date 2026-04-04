@@ -4,7 +4,7 @@
 #include "eni/types.h"
 #ifdef _WIN32
 #include <windows.h>
-#elif defined(__arm__) || defined(__thumb__) || defined(__aarch64__) && defined(__NEWLIB__)
+#elif (defined(__arm__) || defined(__thumb__) || defined(__aarch64__)) && defined(__NEWLIB__)
 /* Bare-metal ARM: no POSIX clock */
 #else
 #include <time.h>
@@ -40,7 +40,7 @@ eni_timestamp_t eni_timestamp_now(void)
     ticks -= 116444736000000000ULL; /* Windows epoch  Unix epoch */
     ts.sec  = ticks / 10000000ULL;
     ts.nsec = (uint32_t)((ticks % 10000000ULL) * 100);
-#elif defined(__arm__) || defined(__thumb__) || defined(__aarch64__) && defined(__NEWLIB__)
+#elif (defined(__arm__) || defined(__thumb__) || defined(__aarch64__)) && defined(__NEWLIB__)
     /* Bare-metal: no POSIX clock_gettime, return zero timestamp */
     (void)ts;
 #else

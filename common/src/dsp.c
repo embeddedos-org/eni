@@ -209,7 +209,7 @@ eni_status_t eni_dsp_extract_features(eni_dsp_fft_ctx_t *ctx, const float *signa
 
     features->hjorth_mobility = (features->hjorth_activity > 1e-10f)
         ? sqrtf(d1_sq / features->hjorth_activity) : 0.0f;
-    features->hjorth_complexity = (d1_sq > 1e-10f)
+    features->hjorth_complexity = (d1_sq > 1e-10f && features->hjorth_mobility > 1e-10f)
         ? sqrtf(d2_sq / d1_sq) / features->hjorth_mobility : 0.0f;
 
     return ENI_OK;

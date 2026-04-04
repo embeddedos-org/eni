@@ -61,10 +61,18 @@ eni_status_t eni_tool_exec(eni_tool_registry_t *reg, const eni_tool_call_t *call
     result->status = st;
 
     eni_timestamp_t end = eni_timestamp_now();
-    uint64_t elapsed_ms = (end.sec - start.sec) * 1000 +
-                          (end.nsec > start.nsec
-                               ? (end.nsec - start.nsec) / 1000000
-                               : 0);
+    uint64_t elapsed_ms;
+    if (end.nsec >= start.nsec) {
+        elapsed_ms = (end.sec - start.sec) * 1000 +
+                     (end.nsec - start.nsec) / 1000000;
+    } else {
+        elapsed_ms = (end.sec - start.sec - 1) * 1000 +
+                     (1000000000UL + end.nsec - start.nsec) / 1000000;
+    }
+    } else {
+        elapsed_ms = (end.sec - start.sec - 1) * 1000 +
+                     (1000000000UL + end.nsec - start.nsec) / 1000000;
+    }
     result->latency_ms = (uint32_t)elapsed_ms;
 
     ENI_LOG_DEBUG("tool_reg", "exec %s → %s (%u ms)",
